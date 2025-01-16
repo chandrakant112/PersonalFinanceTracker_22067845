@@ -158,18 +158,6 @@
                         <option value="debt">Pending Debts</option>
                     </select>
                 </div>
-                @* <div class="tags-filter"> *@
-                @*     @foreach (var tag in availableTags) *@
-                @*     { *@
-                @*         <label class="tag-checkbox"> *@
-                @*             <input type="checkbox" *@
-                @*                    value="@tag" *@
-                @*                    checked="@selectedTags.Contains(tag)" *@
-                @*                    @onchange="@(e => OnTagSelectionChanged(tag, (bool)e.Value))" /> *@
-                @*             @tag *@
-                @*         </label> *@
-                @*     } *@
-                @* </div> *@
             </div>
 
             <table>
@@ -192,6 +180,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @* Filtering  for table data  *@
                     @if (filteredAndSortedTransactions.Any())
                     {
                         int serialNumber = 1;
