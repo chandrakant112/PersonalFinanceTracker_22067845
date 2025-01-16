@@ -1,0 +1,284 @@
+﻿@page "/Debt"
+@using PersonalFinanceTracker.Services
+@using PersonalFinanceTracker.Models
+@inject IAddTransactionServices AddTransactionServices
+@using System.Diagnostics
+@using System.Text.Json;
+
+
+<div class="container">
+    <div class="header">
+        <div class="user-info">
+            <div class="greeting">@GetGreeting()</div>
+            <div class="datetime">Debt Management Dashboard</div>
+            <div class="datetime">Track and Manage Your Debts</div>
+        </div>
+        <div class="summary-cards">
+            <div class="card balance-card">
+                <div class="card-label">Total Debt:</div>
+                <div class="balance debt">@totalDebt.ToString("C")</div>
+            </div>
+            <div class="card balance-card">
+                <div class="card-label">Highest Debt:</div>
+                <div class="balance debt">@highestDebt.ToString("C")</div>
+            </div>
+            <div class="card balance-card">
+                <div class="card-label">Total @totalDebtTransactions Debt Transactions:</div>
+                <div>@totalDebt.ToString("C")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="transactions">
+        <h2>List of all @totalDebtTransactions Debt Transactions</h2>
+        <div class="filters">
+            <div class="search-box">
+                <input type="text" placeholder="Search by title..." @bind="searchText" @bind:event="oninput" />
+            </div>
+            <div class="date-filter">
+                <input type="date" @bind="startDate" />
+                <span>to</span>
+                <input type="date" @bind="endDate" />
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align: center;">S.N</th>
+                    <th style="text-align: left;">TR.ID</th>
+                    <th style="text-align: left;">Title</th>
+                    <th style="text-align: left;">Labels</th>
+                    <th style="text-align: left;">Tags</th>
+                    <th style="text-align: right;cursor:pointer" @onclick="() => SortBy(SortField.Amount)">
+                        Amount @GetSortIcon(SortField.Amount)
+                    </th>
+                    <th style="text-align: center; cursor:pointer" @onclick="() => SortBy(SortField.Date)">
+                        Date @GetSortIcon(SortField.Date)
+                    </th>
+                    <th style="text-align: center;">Debt Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (filteredAndSortedTransactions.Any())
+                {
+                    int serialNumber = 1;
+                    foreach (var transaction in filteredAndSortedTransactions)
+                    {
+                        <tr class="@(debtStatus[transaction.TransactionId] == "Pending" ? "bg-warning-subtle" : "")">
+                            <td style="text-align: center;">@serialNumber</td>
+                            <td style="text-align: left;">@transaction.TransactionId</td>
+                            <td style="text-align: left;">@transaction.Title</td>
+                            <td style="text-align: left;">@string.Join(", ", transaction.Labels)</td>
+                            <td style="text-align: left;">@string.Join(", ", transaction.Tags)</td>
+                            <td style="text-align: right;">
+                                <span style="color: orange;">@transaction.Amount.ToString("C")</span>
+                            </td>
+                            <td style="text-align: right;">@transaction.Date.ToString("yyyy/MM/dd")</td>
+                            <td style="text-align: center;">        
+                                <select @bind="debtStatus[transaction.TransactionId]"
+                                        @bind:after="() => UpdateDebtStatus(transaction)"
+                                        class="form-select form-select-sm">
+                                    <option value="Pending" >Pending</option>
+                                    <option value="Cleared">Clear Now</option>
+                                </select>
+                            </td>
+                        </tr>
+                        serialNumber++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" style="text-align: center;">No debt transactions found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<footer class="footer">
+    <div class="footer-title">Make your financial tracker smart</div>
+    <div class="app-name">TrackExp</div>
+</footer>
+
+@code {
+    private string searchText = string.Empty;
+    private DateTime? startDate;
+    private DateTime? endDate;
+    private decimal totalDebt = 0;
+    private decimal highestDebt = 0;
+    private int totalDebtTransactions = 0;
+    private List<TransactionModel> transactions = new();
+    private Dictionary<string, string> debtStatus = new();
+    private List<TransactionModel> filteredAndSortedTransactions => FilterAndSortTransactions();
+
+    private enum SortField { Date, Amount }
+    private SortField currentSortField = SortField.Date;
+    private bool isAscending = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDebtTransactions();
+    }
+
+    private async Task LoadDebtTransactions()
+    {
+        try
+        {
+            var allTransactions = await AddTransactionServices.GetAllTransactionsAsync();
+
+            if (allTransactions != null)
+            {
+                transactions = allTransactions.Where(t => t.Type?.ToLower() == "debt").ToList();
+                foreach (var transaction in transactions)
+                {
+                    if (!debtStatus.ContainsKey(transaction.TransactionId))
+                    {
+                        debtStatus[transaction.TransactionId] = "Pending";
+                    }
+                }
+                CalculateDebtStatistics();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error loading debt transactions: {ex.Message}");
+            transactions = new List<TransactionModel>();
+        }
+    }
+
+    private void UpdateDebtStatus(TransactionModel transaction)
+    {
+        try
+        {
+            if (!debtStatus.ContainsKey(transaction.TransactionId))
+            {
+                debtStatus[transaction.TransactionId] = "Pending";
+            }
+
+            // Check if the status is updated to "Cleared"
+            if (debtStatus[transaction.TransactionId] == "Cleared")
+            {
+                // Remove the transaction from the JSON file
+                string filePath = @"C:\Users\ramsa\Desktop\Third Year\DotNet\Coursework\PersonalFinanceTracker\Resources\Images\transactions.json";
+
+                if (File.Exists(filePath))
+                {
+                    // Read JSON data from the file
+                    string jsonData = File.ReadAllText(filePath);
+
+                    // Deserialize JSON to a list of transactions
+                    List<TransactionModel> allTransactions = JsonSerializer.Deserialize<List<TransactionModel>>(jsonData);
+
+                    // Remove the cleared transaction by TransactionId
+                    allTransactions.RemoveAll(t => t.TransactionId == transaction.TransactionId);
+
+                    // Serialize the updated list back to JSON
+                    string updatedJson = JsonSerializer.Serialize(allTransactions, new JsonSerializerOptions { WriteIndented = true });
+
+                    // Write the updated JSON back to the file
+                    File.WriteAllText(filePath, updatedJson);
+
+                    // Remove the transaction from the in-memory list
+                    transactions.Remove(transaction);
+                }
+            }
+
+            // Recalculate statistics after the update
+            CalculateDebtStatistics();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error updating debt status: {ex.Message}");
+            debtStatus[transaction.TransactionId] = "Pending";
+        }
+    }
+
+
+    private void CalculateDebtStatistics()
+    {
+        try
+        {
+            totalDebtTransactions = transactions.Count;
+            totalDebt = transactions
+                .Where(t => debtStatus.ContainsKey(t.TransactionId) && debtStatus[t.TransactionId] == "Pending")
+                .Sum(t => t.Amount);
+
+            var pendingDebts = transactions
+                .Where(t => debtStatus.ContainsKey(t.TransactionId) && debtStatus[t.TransactionId] == "Pending");
+            highestDebt = pendingDebts.Any() ? pendingDebts.Max(t => t.Amount) : 0;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error calculating debt statistics: {ex.Message}");
+            totalDebt = 0;
+            highestDebt = 0;
+        }
+    }
+
+    private List<TransactionModel> FilterAndSortTransactions()
+    {
+        try
+        {
+            var filtered = transactions
+                .Where(t =>
+                    (string.IsNullOrWhiteSpace(searchText) ||
+                     (t.Title?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false)) &&
+                    (!startDate.HasValue || t.Date >= startDate.Value) &&
+                    (!endDate.HasValue || t.Date <= endDate.Value))
+                .ToList();
+
+            filtered = currentSortField switch
+            {
+                SortField.Date => isAscending
+                    ? filtered.OrderBy(t => t.Date).ToList()
+                    : filtered.OrderByDescending(t => t.Date).ToList(),
+                SortField.Amount => isAscending
+                    ? filtered.OrderBy(t => t.Amount).ToList()
+                    : filtered.OrderByDescending(t => t.Amount).ToList(),
+                _ => filtered
+            };
+
+            return filtered;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error filtering transactions: {ex.Message}");
+            return new List<TransactionModel>();
+        }
+    }
+
+    private void SortBy(SortField field)
+    {
+        if (currentSortField == field)
+        {
+            isAscending = !isAscending;
+        }
+        else
+        {
+            currentSortField = field;
+            isAscending = true;
+        }
+    }
+
+    private string GetSortIcon(SortField field)
+    {
+        if (currentSortField != field)
+            return "↕";
+        return isAscending ? "↑" : "↓";
+    }
+
+    private string GetGreeting()
+    {
+        var hour = DateTime.Now.Hour;
+
+        if (hour < 12)
+            return "Good Morning!";
+        else if (hour < 18)
+            return "Good Afternoon";
+        else
+            return "Good Evening!";
+    }
+}

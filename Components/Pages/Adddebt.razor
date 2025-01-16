@@ -1,0 +1,293 @@
+﻿@page "/AddDebt"
+@using PersonalFinanceTracker.Services
+@using PersonalFinanceTracker.Models
+@inject IAddTransactionServices AddTransactionServices
+
+<div class="container">
+    <div class="datetime">@currentDateTime.ToString("f")</div>
+    <div class="greeting">@GetGreeting()</div>
+
+    <div class="balance-info">
+        <div class="balance-row">
+            @* <div class="small-box green-bg"> *@
+            @*     <span>Balance:</span> <span class="green-text">@balance</span> *@
+            @* </div> *@
+            <div class="small-box yellow-bg">
+                <span>Total Debt:</span> <span class="yellow-text">@totalDebt</span>
+            </div>
+        </div>
+        <div class="balance-row">
+            @* <div class="small-box yellow-bg"> *@
+            @*     <span>Pending Debts:</span> <span class="yellow-text">@pendingDebt</span> *@
+            @* </div> *@
+            @* <div class="small-box red-bg"> *@
+            @*     <span>Total Outflow:</span> <span class="red-text">@totalOutflow</span> *@
+            @* </div> *@
+        </div>
+    </div>
+
+    <div class="debit-form">
+        <div class="form-title">Add Debt</div>
+
+        <input type="text" class="input-field" placeholder="Enter Title" @bind="currentTransaction.Title" />
+        @if (!string.IsNullOrWhiteSpace(titleErrorMessage))
+        {
+            <div class="error-message">@titleErrorMessage</div>
+        }
+        <input type="number" class="input-field" placeholder="Amount" @bind="currentTransaction.Amount" />
+
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+                <div class="error-message">@errorMessage</div>
+        }
+
+        <input type="text" class="input-field" placeholder="Note" @bind="currentTransaction.Notes" />
+
+        <div class="tag-container">
+            <div class="tag-input-container">
+                <select class="tag-dropdown" @bind="newTag">
+                    <option value="" disabled>Select Tag</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Business">Business</option>
+                    <option value="Family">Family</option>
+                    <option value="Friends">Friends</option>
+                    <option value="Emergency">Emergency</option>
+                    <option value="Investment">Investment</option>
+                    <option value="Loan">Loan</option>
+                    <option value="Other">Other</option>
+                </select>
+                @if (!string.IsNullOrWhiteSpace(tagErrorMessage))
+                {
+                        <div class="error-message">@tagErrorMessage</div>
+                }
+                <input type="text" class="tag-input" placeholder="Custom Tag" @bind="newTag" @oninput="ResetDropdown" />
+            </div>
+            <input type="text" class="tag-input" placeholder="Label" @bind="newLabel" />
+            @if (!string.IsNullOrWhiteSpace(labelErrorMessage))
+            {
+                    <div class="error-message">@labelErrorMessage</div>
+            }
+        </div>
+
+        <div class="date-input">
+            <input type="date" class="calendar-icon" @bind="currentTransaction.Date" />
+            Selected Date: @currentTransaction.Date.ToString("dd/MM/yyyy")
+        </div>
+
+        <div class="date-input">
+            <input type="date" class="calendar-icon" @bind="dueDate" />
+            Due Date: @dueDate.ToString("dd/MM/yyyy")
+        </div>
+
+        <div class="button-container">
+            <button class="btn" @onclick="SaveDebt">Add Debt</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-text">Track your debts wisely</div>
+        <div class="app-name">TrackExp</div>
+    </div>
+</div> <!-- Closing tag for the container -->
+
+
+@code {
+    private string userName;
+    private DateTime currentDateTime;
+    private decimal balance;
+    private decimal pendingDebt;
+    private decimal totalOutflow;
+    private decimal totalDebt;
+    private string errorMessage = string.Empty;
+    private TransactionModel currentTransaction = new();
+    private string newTag = string.Empty;
+    private string newLabel = string.Empty;
+    private DateTime dueDate = DateTime.Now.AddDays(30); // Default due date is 30 days from now
+    private string titleErrorMessage = string.Empty;
+    private string tagErrorMessage = string.Empty;
+    private string labelErrorMessage = string.Empty;
+
+    private string GetGreeting()
+    {
+        var hour = currentDateTime.Hour;
+        if (hour >= 5 && hour < 12)
+            return $"Good morning, {userName}";
+        else if (hour >= 12 && hour < 17)
+            return $"Good afternoon, {userName}";
+        else if (hour >= 17 && hour < 21)
+            return $"Good evening, {userName}";
+        else
+            return $"Good night, {userName}";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentDateTime = DateTime.Now;
+        userName = "Ram"; // Simulate user retrieval
+
+        try
+        {
+            var transactions = await AddTransactionServices.GetAllTransactionsAsync();
+            CalculateFinancialMetrics(transactions);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching transactions: {ex.Message}");
+        }
+    }
+
+    private void CalculateFinancialMetrics(IEnumerable<TransactionModel> transactions)
+    {
+        balance = totalOutflow = totalDebt = 0;
+
+        foreach (var transaction in transactions)
+        {
+            switch (transaction.Type?.ToLower())
+            {
+                case "credit":
+                    if (transaction.Amount > 0)
+                    {
+                        balance += transaction.Amount;
+                    }
+                    break;
+                case "debit":
+                    if (transaction.Amount > 0)
+                    {
+                        totalOutflow += transaction.Amount;
+                        balance -= transaction.Amount;
+                    }
+                    break;
+                case "debt":
+                    if (transaction.Amount > 0)
+                    {
+                        totalDebt += transaction.Amount;
+                        balance += transaction.Amount; // Debt adds to balance initially
+                    }
+                    break;
+            }
+        }
+        
+        pendingDebt = transactions
+            .Where(t => t.Type?.ToLower() == "debt" && t.Amount > 0)
+            .Sum(t => t.Amount);
+    }
+
+    private async Task SaveDebt()
+    {
+        try
+        {
+
+            // Validate title
+            if (string.IsNullOrWhiteSpace(currentTransaction.Title))
+            {
+                titleErrorMessage = "Please provide a valid title.";
+                return;
+            }
+            else
+            {
+                titleErrorMessage = string.Empty;
+            }
+
+            // Validate amount
+            if (currentTransaction.Amount <= 0)
+            {
+                errorMessage = "Error: Amount must be greater than zero.";
+                return;
+            }
+            else
+            {
+                errorMessage = string.Empty;
+            }
+
+           
+            // Validate tag
+            if (string.IsNullOrWhiteSpace(newTag))
+            {
+                tagErrorMessage = "Please provide a valid tag.";
+                return;
+            }
+            else
+            {
+                tagErrorMessage = string.Empty;
+            }
+
+            // Validate label
+            if (string.IsNullOrWhiteSpace(newLabel))
+            {
+                labelErrorMessage = "Please provide a valid label.";
+                return;
+            }
+            else
+            {
+                labelErrorMessage = string.Empty;
+            }
+
+            // Validate due date
+            if (dueDate <= currentTransaction.Date)
+            {
+                errorMessage = "Due date must be after the transaction date.";
+                return;
+            }
+
+            // Clear any previous error messages
+            errorMessage = string.Empty;
+            titleErrorMessage = string.Empty;
+            tagErrorMessage = string.Empty;
+            labelErrorMessage = string.Empty;
+
+            // Set up the debt transaction
+            currentTransaction.Type = "Debt";
+            currentTransaction.TransactionId = GenerateTransactionId();
+            currentTransaction.Tags = newTag;
+            currentTransaction.Labels = newLabel;
+            // currentTransaction.DueDate = dueDate;
+
+            // Save the transaction
+            await AddTransactionServices.SaveTransactionAsync(currentTransaction);
+
+            // Refresh financial metrics
+            var transactions = await AddTransactionServices.GetAllTransactionsAsync();
+            CalculateFinancialMetrics(transactions);
+
+            // Clear the form
+            ClearForm();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving debt: {ex.Message}");
+            errorMessage = "An error occurred while saving the debt.";
+        }
+    }
+
+    private string GenerateTransactionId()
+    {
+        return new Random().Next(10000, 99999).ToString();
+    }
+
+    private void ClearForm()
+    {
+        currentTransaction = new TransactionModel();
+        newTag = string.Empty;
+        newLabel = string.Empty;
+        dueDate = DateTime.Now.AddDays(30);
+        errorMessage = string.Empty;
+        tagErrorMessage = string.Empty;
+        labelErrorMessage = string.Empty;
+    }
+
+    private void OnDropdownChange(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+        {
+            newTag = e.Value.ToString();
+        }
+    }
+
+    private void ResetDropdown(ChangeEventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(newTag))
+        {
+            newTag = string.Empty;
+        }
+    }
+}

@@ -1,0 +1,507 @@
+﻿@page "/Transaction"
+@using PersonalFinanceTracker.Services
+@using PersonalFinanceTracker.Models
+@inject IAddTransactionServices AddTransactionServices
+@using System.Diagnostics
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="user-info">
+                <div class="greeting">@GetGreeting()</div>
+                <div class="datetime">Welcome to Dashboard</div>
+                <div class="datetime">Get some Insights for Better Financial Management</div>
+                
+            </div>
+            <div class="summary-cards">
+                <div class="card balance-card">
+                    <div class="card-label">Balance:</div>
+                    <div class="balance">@balance.ToString("C")</div>
+                </div>
+                <div class="card balance-card">
+                    <div class="card-label">Pending debt:</div>
+                    <div class="balance pending">@pendingDebt.ToString("C")</div>
+                </div>
+                <div class="card balance-card">
+                    <div class="card-label">Total @totalTransactions Transactions:</div>
+                    <div>@netTotal.ToString("C")</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="card stat-card">
+                <h3>Total Inflow</h3>
+                <div class="stat-value inflow">@totalInflow.ToString("C")</div>
+                <div class="stat-details">
+                    <div>Highest: @highestInflow.ToString("C")</div>
+                    <div>Lowest: @lowestInflow.ToString("C")</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <h3>Total Outflow</h3>
+                <div class="stat-value outflow">@totalOutflow.ToString("C")</div>
+                <div class="stat-details">
+                    <div>Highest: @highestOutflow.ToString("C")</div>
+                    <div>Lowest: @lowestOutflow.ToString("C")</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <h3>Total Debt</h3>
+                @* change with highest debt value here  *@
+                <div class="stat-value debt">@totalDebt.ToString("C")</div>
+                <div class="stat-details">
+                    @* <div>Total Transactions: @totalTransactions</div> *@
+                    <div>Highest: @highestDebt.ToString("C")</div>
+                    @* <div class="stat-value debt">@highestDebt.ToString("C")</div> *@
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <div class="top-bottom-transactions">
+            <div class="card transaction-summary-card">
+                <h3>Top 5 Transactions</h3>
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var transaction in topTransactions)
+                        {
+                            <tr>
+                                <td>@transaction.Title</td>
+                                <td>
+                                    <span class="@GetTypeClass(transaction.Type)">
+                                        @transaction.Type
+                                    </span>
+                                </td>
+                                <td class="@GetTypeClass(transaction.Type)">
+                                    @(transaction.Type?.ToLower() == "debit" ? "- " : "+ ")@transaction.Amount.ToString("C")
+                                </td>
+                                <td>@transaction.Date.ToString("yyyy/MM/dd")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card transaction-summary-card">
+                <h3>Bottom 5 Transactions</h3>
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var transaction in bottomTransactions)
+                        {
+                            <tr>
+                                <td>@transaction.Title</td>
+                                <td>
+                                    <span class="@GetTypeClass(transaction.Type)">
+                                        @transaction.Type
+                                    </span>
+                                </td>
+                                <td class="@GetTypeClass(transaction.Type)">
+                                    @(transaction.Type?.ToLower() == "debit" ? "- " : "+ ")@transaction.Amount.ToString("C")
+                                </td>
+                                <td>@transaction.Date.ToString("yyyy/MM/dd")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+        <div class="transactions">
+            <h2>List of all @totalTransactions Transactions.</h2>
+            @* <div>Total Transactions: @totalTransactions</div> *@
+            <div class="filters">
+                <div class="search-box">
+                    <input type="text" placeholder="Search by title..." @bind="searchText" @bind:event="oninput" />
+                </div>
+                <div class="date-filter">
+                    <input type="date" @bind="startDate" />
+                    <span>to</span>
+                    <input type="date" @bind="endDate" />
+                </div>
+                @* Code to add search filter by debt *@
+                <div class="type-filter">
+                    <select @bind="filterType">
+                        <option value="all">All Types</option>
+                        <option value="debit">Debit</option>
+                        <option value="credit">Credit</option>
+                        <option value="debt">Pending Debts</option>
+                    </select>
+                </div>
+                @* <div class="tags-filter"> *@
+                @*     @foreach (var tag in availableTags) *@
+                @*     { *@
+                @*         <label class="tag-checkbox"> *@
+                @*             <input type="checkbox" *@
+                @*                    value="@tag" *@
+                @*                    checked="@selectedTags.Contains(tag)" *@
+                @*                    @onchange="@(e => OnTagSelectionChanged(tag, (bool)e.Value))" /> *@
+                @*             @tag *@
+                @*         </label> *@
+                @*     } *@
+                @* </div> *@
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">S.N</th>
+                        <th style="text-align: left;">TR.ID</th>
+                        <th style="text-align: left;">Title</th>
+                        <th style="text-align: left;">Labels</th>
+                        <th style="text-align: left;">Tags</th>
+                        <th style="text-align: left;">Type</th>
+                        <th style="text-align: right;cursor:pointer" @onclick="() => SortBy(SortField.Amount)">
+                            Amount @GetSortIcon(SortField.Amount)
+                        </th>
+                        <th style="text-align: right;">Balance</th>
+                        <th style="text-align: center; cursor:pointer" @onclick="() => SortBy(SortField.Date)">
+                            Date @GetSortIcon(SortField.Date)
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (filteredAndSortedTransactions.Any())
+                    {
+                        int serialNumber = 1;
+                        foreach (var transaction in filteredAndSortedTransactions)
+                        {
+                            <tr>
+                                <td style="text-align: center;">@serialNumber</td>
+                                <td style="text-align: left;">@transaction.TransactionId</td>
+                                <td style="text-align: left;">@transaction.Title</td>
+                                <td style="text-align: left;">@string.Join(", ", transaction.Labels)</td>
+                                <td style="text-align: left;">@string.Join(", ", transaction.Tags)</td>
+                                <td style="text-align: left;">
+                                    @if (transaction.Type?.ToLower() == "debit")
+                                    {
+                                        <span style="color: red;">@transaction.Type</span>
+                                    }
+                                    else if (transaction.Type?.ToLower() == "credit")
+                                    {
+                                        <span style="color: green;">@transaction.Type</span>
+                                    }
+                                    else if (transaction.Type?.ToLower() == "debt")
+                                    {
+                                        <span style="color: orange;">@transaction.Type</span>
+                                    }
+                                </td>
+                                <td style="text-align: right;">
+                                    @if (transaction.Type?.ToLower() == "debit")
+                                    {
+                                        <span style="color: red;">- @transaction.Amount.ToString("C")</span>
+                                    }
+                                    else if (transaction.Type?.ToLower() == "credit")
+                                    {
+                                        <span style="color: green;">+ @transaction.Amount.ToString("C")</span>
+                                    }
+                                    else if (transaction.Type?.ToLower() == "debt")
+                                    {
+                                        <span style="color: orange;">+ @transaction.Amount.ToString("C")</span>
+                                    }
+                                </td>
+                                <td style="text-align: right;">@transaction.Balance.ToString("C")</td>
+                                <td style="text-align: right;">@transaction.Date.ToString("yyyy/MM/dd")</td>
+                            </tr>
+                            serialNumber++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" style="text-align: center;">No transactions found.</td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+        <footer class="footer">
+            <div class="footer-title">Make your financial tracker smart</div>
+            <div class="app-name">TrackExp</div>
+        </footer>
+    </div>
+</body>
+
+@code {
+    private string userName;
+    private DateTime currentDateTime;
+    private int balance = 0;
+    private decimal pendingDebt = 0;
+    private decimal totalInflow = 0;
+    private decimal totalOutflow = 0;
+    private decimal totalDebt = 0;
+    private decimal highestInflow = 0;
+    private decimal lowestInflow = decimal.MaxValue;
+    private decimal highestOutflow = 0;
+    private decimal lowestOutflow = decimal.MaxValue;
+    private int totalTransactions = 0;
+    private decimal netTotal = 0;
+    private decimal highestDebt = 0;
+    private Timer _timer;
+    private string greeting;
+    private string searchText = string.Empty;
+    private string filterType = "all";
+    private List<string> selectedTags = new();
+    private HashSet<string> availableTags = new();
+    private DateTime? startDate;
+    private DateTime? endDate;
+
+    private enum SortField { Date, Amount }
+    private SortField currentSortField = SortField.Date;
+    private bool isAscending = false;
+
+    private List<TransactionModel> transactions = new();
+    private List<TransactionModel> filteredAndSortedTransactions => FilterAndSortTransactions();
+    // Add this method to handle tag selection
+
+
+
+    private List<TransactionModel> topTransactions = new();
+    private List<TransactionModel> bottomTransactions = new();
+    private string GetTypeClass(string type)
+    {
+        return type?.ToLower() switch
+        {
+            "debit" => "type-debit",
+            "credit" => "type-credit",
+            "debt" => "type-debt",
+            _ => ""
+        };
+    }
+    private void UpdateTopBottomTransactions()
+    {
+        // Get top 5 transactions by amount
+        topTransactions = transactions
+            .OrderByDescending(t => t.Amount)
+            .Take(5)
+            .ToList();
+
+        // Get bottom 5 transactions by amount
+        bottomTransactions = transactions
+            .OrderBy(t => t.Amount)
+            .Take(5)
+            .ToList();
+    }
+
+
+
+
+    private void OnTagSelectionChanged(string tag, bool isSelected)
+    {
+        if (isSelected)
+        {
+            selectedTags.Add(tag);
+        }
+        else
+        {
+            selectedTags.Remove(tag);
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        var allTransactions = await AddTransactionServices.GetAllTransactionsAsync();
+
+        if (allTransactions != null)
+        {
+            transactions = allTransactions.ToList();
+            totalTransactions = transactions.Count;
+
+            // Reset financial summaries
+            ResetFinancialSummaries();
+
+            // Calculate financial summaries and collect tags
+            foreach (var transaction in transactions)
+            {
+                UpdateFinancialSummaries(transaction);
+                foreach (var tag in transaction.Tags)
+                {
+                    availableTags.Add(tag.ToString());
+                }
+            }
+            UpdateTopBottomTransactions();
+           
+            pendingDebt = totalDebt;
+        }
+
+        
+    }
+
+    private void ResetFinancialSummaries()
+    {
+        balance = 0;
+        totalInflow = 0;
+        totalOutflow = 0;
+        pendingDebt = 0;
+        highestInflow = 0;
+        lowestInflow = decimal.MaxValue;
+        highestOutflow = 0;
+        lowestOutflow = decimal.MaxValue;
+    }
+    private void UpdateFinancialSummaries(TransactionModel transaction)
+    {
+        if (transaction.Type?.ToLower() == "credit")
+        {
+            totalInflow += transaction.Amount;
+            highestInflow = Math.Max(highestInflow, transaction.Amount);
+            lowestInflow = Math.Min(lowestInflow, transaction.Amount);
+            balance += transaction.Amount;
+            transaction.Balance = balance;
+
+            // Increase net total with credit amount
+            netTotal += transaction.Amount;
+        }
+
+        if (transaction.Type?.ToLower() == "debt")
+        {
+            totalInflow += transaction.Amount;
+            totalDebt += transaction.Amount;
+            balance += transaction.Amount;
+            transaction.Balance = balance;
+
+            // Track the highest debt amount
+            highestDebt = Math.Max(highestDebt, Math.Abs(transaction.Amount));
+
+            // Increase net total with debt amount
+            netTotal += transaction.Amount;
+        }
+        if (transaction.Type?.ToLower() == "debit")
+        {
+            if (transaction.Amount <= balance)
+            {
+                totalOutflow += transaction.Amount;
+                highestOutflow = Math.Max(highestOutflow, transaction.Amount);
+                lowestOutflow = Math.Min(lowestOutflow, transaction.Amount);
+                balance -= transaction.Amount;
+            }
+            else
+            {
+                pendingDebt += transaction.Amount - balance;
+                balance = 0;
+            }
+            transaction.Balance = balance;
+
+            // Decrease net total with debit amount
+            netTotal += transaction.Amount;
+        }
+    }
+
+
+    private string GetGreeting()
+    {
+        var hour = DateTime.Now.Hour;
+
+        if (hour < 12)
+            return "Good Morning!";
+        else if (hour < 18)
+            return "Good Afternoon Ram";
+        else
+            return "Good Evening!";
+    }
+
+    private void UpdateDateTime()
+    {
+        // Update the current date and time
+        currentDateTime = DateTime.Now;
+
+        // Update the greeting based on the new time
+        greeting = GetGreeting();
+
+        // Request UI update
+        InvokeAsync(StateHasChanged);
+    }
+
+    private List<TransactionModel> FilterAndSortTransactions()
+    {
+        Debug.WriteLine(searchText);
+        try
+        {
+            var filtered = transactions
+     .Where(t =>
+         (string.IsNullOrWhiteSpace(searchText) ||
+          (t.Title?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false)) && // Handle nullable Title
+         (filterType == "all" ||
+          (t.Type?.Equals(filterType, StringComparison.OrdinalIgnoreCase) ?? false)) && // Handle nullable Type
+         (!startDate.HasValue || t.Date >= startDate.Value) && // Date filter start
+         (!endDate.HasValue || t.Date <= endDate.Value) && // Date filter end
+         (selectedTags.Count == 0 ||
+          selectedTags.Any(tag => t.Tags?.Split(',').Contains(tag) ?? false)) // Handle nullable Tags
+     )
+     .ToList();
+
+
+
+
+
+            // Apply sorting
+            filtered = currentSortField switch
+            {
+                SortField.Date => isAscending
+                    ? filtered.OrderBy(t => t.Date).ToList()
+                    : filtered.OrderByDescending(t => t.Date).ToList(),
+                SortField.Amount => isAscending
+                    ? filtered.OrderBy(t => t.Amount).ToList()
+                    : filtered.OrderByDescending(t => t.Amount).ToList(),
+                _ => filtered
+            };
+
+            return filtered;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+        }
+        return null;
+    }
+
+    private void SortBy(SortField field)
+    {
+        if (currentSortField == field)
+        {
+            isAscending = !isAscending;
+        }
+        else
+        {
+            currentSortField = field;
+            isAscending = true;
+        }
+    }
+
+    private string GetSortIcon(SortField field)
+    {
+        if (currentSortField != field)
+            return "↕";
+        return isAscending ? "↑" : "↓";
+    }
+}

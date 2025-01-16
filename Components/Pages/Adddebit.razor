@@ -1,0 +1,53 @@
+﻿@page "/Adddebit"
+
+<body>
+    <div class="container">
+        <div class="datetime">Date time: 2024/06/01 12:45 PM</div>
+        <div class="greeting">Good morning, ram</div>
+
+        <div class="balance-info">
+            <div class="balance-row">
+                <span>Balance: <span class="green-text">25000</span></span>
+                <span>Pending debt: <span class="red-text">25000</span></span>
+            </div>
+            <div class="balance-row">
+                <span>Total Inflow: <span class="green-text">25000</span></span>
+                <span>Total outflow: <span class="red-text">25000</span></span>
+                <span>Total debt: <span class="red-text">25000</span></span>
+            </div>
+        </div>
+
+        <div class="debit-form">
+            <div class="form-title">Add Debit</div>
+
+            <input type="text" class="input-field" placeholder="Enter Title">
+            <input type="text" class="input-field" placeholder="Amount">
+            <input type="text" class="input-field" placeholder="Note">
+
+            <div class="tag-container">
+                <input type="text" class="tag-input" placeholder="Tag">
+                <input type="text" class="tag-input" placeholder="Label">
+            </div>
+
+            <div class="date-input">
+                <span>19/08/2023</span>
+                <svg class="calendar-icon" viewBox="0 0 24 24">
+                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" />
+                </svg>
+            </div>
+
+            <div class="button-container">
+                <button class="btn">Add Debit</button>
+                <button class="btn">Cancel</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">Make your financial tracker smart</div>
+            <div class="app-name">TrackExp</div>
+        </div>
+    </div>
+</body>
+@code {
+
+}

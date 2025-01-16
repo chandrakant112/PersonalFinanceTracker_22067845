@@ -1,0 +1,89 @@
+
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f6; /* Light yellowish white */
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+h3, label {
+    color: #444;
+}
+
+/* Container Styling */
+.profile-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #f0eae0;
+}
+
+.profile-header {
+    background: rgb(253, 253, 253);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #f0eae0;
+}
+
+.datetime {
+    font-size: 14px;
+    color: #777;
+}
+
+.greeting {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* Content Styling */
+.profile-content {
+    padding: 20px 30px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    background: #fdfdfc;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+}
+
+    .form-input[readonly] {
+        cursor: not-allowed;
+        background: #f7f7f5;
+    }
+
+/* Footer Styling */
+.app-footer {
+    text-align: center;
+    background: rgb(253, 253, 253);
+    color: #666;
+    padding: 10px 20px;
+    font-size: 12px;
+    border-top: 1px solid #f0eae0;
+}
+
+    .app-footer h2 {
+        margin: 8px 0 0;
+        color: #444;
+        font-size: 16px;
+    }

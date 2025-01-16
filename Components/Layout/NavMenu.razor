@@ -1,0 +1,65 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">PersonalFinanceTracker</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Transaction">
+                <span aria-hidden="true"></span> 🏠 Dashboard
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Addtransaction">
+                <span aria-hidden="true"></span>💸 Add Transaction
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/Adddebt">
+                <span aria-hidden="true"></span> 🔄Add Debt
+            </NavLink>
+
+        </div>
+       
+       
+
+        
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Debt">
+                <span aria-hidden="true"></span>📝 Debt
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Report">
+                <span aria-hidden="true"></span>📈 Report
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Profile">
+                <span aria-hidden="true"></span>👤 Profile
+            </NavLink>
+        </div>
+
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span aria-hidden="true"></span>  ↩️ Logout
+            </NavLink>
+        </div>
+        
+    </nav>
+</div>

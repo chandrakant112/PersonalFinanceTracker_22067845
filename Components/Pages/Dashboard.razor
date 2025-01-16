@@ -1,0 +1,168 @@
+﻿
+
+
+
+@page "/Dashboard"
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="welcome-section">
+                <h1>Good morning</h1>
+                <h2>Ram</h2>
+            </div>
+            <div class="summary-cards">
+                <div class="stat-card">
+                    <div style="background-color:" class="card-label">Balance:</div>
+                    <div class="balance green">25000</div>
+                </div>
+                <div class="stat-card">
+                    <div class="card-label">Pending debt:</div>
+                    <div class="balance yellow">25000</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Inflow</h3>
+                <div class="balance greeen">25000</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Outflow</h3>
+                <div class="balance red">25000</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Debt</h3>
+                <div class="balance yelllow">25000</div>
+            </div>
+        </div>
+
+        <div class="transactions-section">
+            <div class="transaction-card">
+                <h3>Top 5 Transactions</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.N</th>
+                            <th>Type <span class="sort-icon"></span></th>
+                            <th>Amount</th>
+                            <th>Date <span class="sort-icon"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td class="debit">Debit</td>
+                            <td>1060</td>
+                            <td class="date-cell">2024/07/06</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td class="credit">Credit</td>
+                            <td>5680</td>
+                            <td class="date-cell">2024/03/03</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td class="credit">Credit</td>
+                            <td>3000</td>
+                            <td class="date-cell">2024/06/04</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td class="debit">Debit</td>
+                            <td>3450</td>
+                            <td class="date-cell">2024/05/07</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td class="debit">Debit</td>
+                            <td>5890</td>
+                            <td class="date-cell">2024/07/21</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="transaction-card">
+                <h3>Low 5 Transactions</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.N</th>
+                            <th>Type <span class="sort-icon"></span></th>
+                            <th>Amount</th>
+                            <th>Date <span class="sort-icon"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td class="debit">Debit</td>
+                            <td>100</td>
+                            <td class="date-cell">2024/07/06</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td class="credit">Credit</td>
+                            <td>300</td>
+                            <td class="date-cell">2024/03/03</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td class="credit">Credit</td>
+                            <td>600</td>
+                            <td class="date-cell">2024/06/04</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td class="debit">Debit</td>
+                            <td>900</td>
+                            <td class="date-cell">2024/05/07</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td class="debit">Debit</td>
+                            <td>500</td>
+                            <td class="date-cell">2024/07/21</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="pending-debts">
+            <h3>Pending debts</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>S.N</th>
+                        <th>Source</th>
+                        <th>Amount</th>
+                        <th>Due Date <span class="sort-icon"></span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Ram</td>
+                        <td>1000</td>
+                        <td class="date-cell">2024/07/06</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Hari</td>
+                        <td>5000</td>
+                        <td class="date-cell">2024/03/03</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+
+@code {
+
+}

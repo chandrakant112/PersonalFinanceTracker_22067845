@@ -1,0 +1,112 @@
+﻿@page "/"
+@inject ILoginServices LoginService
+@inject NavigationManager NavigationManager
+@using PersonalFinanceTracker.Models
+@using PersonalFinanceTracker.Services
+
+
+<div class="header">
+    <div class="logo">
+        <div class="logo-icon"></div>
+        Trackexp
+    </div>
+</div>
+
+<div class="login-container">
+    <div class="login-card">
+        <span class="close-button">×</span>
+        <h2>Welcome to expense tracker</h2>
+        <div class="subtitle">Login to your Account</div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">@errorMessage</div>
+        }
+
+        <input type="text" placeholder="UserName" @bind="user.Username">
+        <input type="password" placeholder="Password" @bind="user.Password">
+        <input type="password" placeholder="Confirm Password" @bind="user.ConfirmPassword">
+
+        <select @bind="user.Currency">
+            <option value="">Currency</option>
+            <option value="npr">🇳🇵 NPR</option>
+            <option value="inr">🇮🇳 INR</option>
+            <option value="usd">🇺🇸 USD</option>
+            <option value="eur">🇪🇺 Euro</option>
+            <option value="gbp">🇬🇧 GBP</option>
+        </select>
+
+        <button class="login-button" @onclick="HandleLogin">Login</button>
+
+        <div class="terms">
+            ✓ By signing up, I agree with the <a href="#">Terms of Service</a> and
+            <a href="#">Privacy Policy</a>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div>make your financial tracker smart</div>
+    <div class="brand">TrackExp</div>
+</div>
+
+@code {
+    @code {
+        private User user = new();
+        private string errorMessage = string.Empty;
+
+        private async Task HandleLogin()
+        {
+            errorMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(user.Username))
+            {
+                errorMessage = "Username is required.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(user.Password))
+            {
+                errorMessage = "Password is required.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(user.ConfirmPassword))
+            {
+                errorMessage = "Confirm Password is required.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(user.Currency))
+            {
+                errorMessage = "Please select a currency.";
+                return;
+            }
+
+            if (user.Password != user.ConfirmPassword)
+            {
+                errorMessage = "Passwords do not match.";
+                return;
+            }
+
+            try
+            {
+                var isValid = await LoginService.ValidateLoginAsync(user);
+
+                if (isValid)
+                {
+                    NavigationManager.NavigateTo("/Dashboard");
+                }
+                else
+                {
+                    errorMessage = "Invalid credentials. Please try again.";
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"An error occurred: {ex.Message}";
+            }
+        }
+    }
+
+}

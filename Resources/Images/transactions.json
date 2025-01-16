@@ -1,0 +1,156 @@
+[
+  {
+    "TransactionId": "56601",
+    "Type": "credit",
+    "Title": "Bonus",
+    "Amount": 12000,
+    "Balance": 0,
+    "Notes": "Thakali set",
+    "Date": "2025-01-15T21:02:44.0165504+05:45",
+    "Labels": "MST",
+    "Tags": "Monthly"
+  },
+  {
+    "TransactionId": "61640",
+    "Type": "debit",
+    "Title": "Petrol",
+    "Amount": 700,
+    "Balance": 0,
+    "Notes": "Bike petrol",
+    "Date": "2025-01-15T21:03:38.9897034+05:45",
+    "Labels": "Magh",
+    "Tags": "Fuel"
+  },
+  {
+    "TransactionId": "48239",
+    "Type": "credit",
+    "Title": "title1",
+    "Amount": 10000,
+    "Balance": 0,
+    "Notes": "Note",
+    "Date": "2025-01-15T22:16:55.2475407+05:45",
+    "Labels": "label",
+    "Tags": "Rent"
+  },
+  {
+    "TransactionId": "97050",
+    "Type": "debit",
+    "Title": "title",
+    "Amount": 3000,
+    "Balance": 0,
+    "Notes": null,
+    "Date": "2025-01-15T22:17:12.2879462+05:45",
+    "Labels": "title",
+    "Tags": "title"
+  },
+  {
+    "TransactionId": "80050",
+    "Type": "debit",
+    "Title": null,
+    "Amount": 3000,
+    "Balance": 0,
+    "Notes": null,
+    "Date": "2025-01-15T22:17:23.0175763+05:45",
+    "Labels": "label",
+    "Tags": "title"
+  },
+  {
+    "TransactionId": "54391",
+    "Type": "credit",
+    "Title": "Title",
+    "Amount": 55,
+    "Balance": 0,
+    "Notes": "title",
+    "Date": "2025-01-15T22:17:37.9078373+05:45",
+    "Labels": "title",
+    "Tags": "Miscellaneous"
+  },
+  {
+    "TransactionId": "84629",
+    "Type": "credit",
+    "Title": "Title",
+    "Amount": 1,
+    "Balance": 0,
+    "Notes": "Note",
+    "Date": "2025-01-15T22:17:51.3563025+05:45",
+    "Labels": "Label",
+    "Tags": "Clothes"
+  },
+  {
+    "TransactionId": "75048",
+    "Type": "debit",
+    "Title": null,
+    "Amount": 1000,
+    "Balance": 0,
+    "Notes": null,
+    "Date": "2025-01-15T23:53:22.1236857+05:45",
+    "Labels": "label",
+    "Tags": "Rent"
+  },
+  {
+    "TransactionId": "87850",
+    "Type": "Debt",
+    "Title": "ra",
+    "Amount": 1000,
+    "Balance": 0,
+    "Notes": null,
+    "Date": "2025-01-15T23:57:25.8826819+05:45",
+    "Labels": "Ram",
+    "Tags": "Family"
+  },
+  {
+    "TransactionId": "86620",
+    "Type": "Debt",
+    "Title": "ram",
+    "Amount": 3,
+    "Balance": 0,
+    "Notes": "note",
+    "Date": "2025-01-03T00:00:00",
+    "Labels": "label",
+    "Tags": "Business"
+  },
+  {
+    "TransactionId": "36588",
+    "Type": "debit",
+    "Title": "ram",
+    "Amount": 1000,
+    "Balance": 0,
+    "Notes": null,
+    "Date": "2025-01-16T00:09:37.1706833+05:45",
+    "Labels": "label",
+    "Tags": "Rent"
+  },
+  {
+    "TransactionId": "43437",
+    "Type": "debit",
+    "Title": "ram",
+    "Amount": 1000,
+    "Balance": 0,
+    "Notes": "note",
+    "Date": "2025-01-16T00:10:06.2400101+05:45",
+    "Labels": "label",
+    "Tags": "ram"
+  },
+  {
+    "TransactionId": "96824",
+    "Type": "debit",
+    "Title": "ram",
+    "Amount": 111,
+    "Balance": 0,
+    "Notes": null,
+    "Date": "2025-01-16T00:11:04.9323644+05:45",
+    "Labels": "ram",
+    "Tags": "Rent"
+  },
+  {
+    "TransactionId": "66342",
+    "Type": "Debt",
+    "Title": "ram",
+    "Amount": 100,
+    "Balance": 0,
+    "Notes": "Note",
+    "Date": "2025-01-16T00:49:17.3388261+05:45",
+    "Labels": "Bike",
+    "Tags": "Investment"
+  }
+]

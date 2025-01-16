@@ -1,0 +1,75 @@
+﻿@page "/Profile"
+
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="datetime">@currentDateTime.ToString("f")</div>
+            <div class="greeting">@GetGreeting()</div>
+        </div>
+        <div class="profile-content">
+            <h3>Your Profile</h3>
+
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" value="Chandrakant Sapkota" class="form-input" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>UserName</label>
+                <input type="text" value="chandrakant" class="form-input" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" value="chandrakant123" class="form-input" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Currency type</label>
+                <input type="text" value="USD" class="form-input" readonly>
+            </div>
+        </div>
+
+
+        <footer class="app-footer">
+            <p>Make your financial tracker smart</p>
+            <h2>TrackExp</h2>
+        </footer>
+    </div>
+</body>
+@code {
+    private DateTime currentDateTime;
+
+    protected override void OnInitialized()
+    {
+        currentDateTime = DateTime.Now;
+        var timer = new System.Timers.Timer(1000); // Update every second
+        timer.Elapsed += (sender, e) =>
+        {
+            currentDateTime = DateTime.Now;
+            InvokeAsync(StateHasChanged); // Refresh the UI
+        };
+        timer.Start();
+    }
+
+    private string GetGreeting()
+    {
+        var hour = currentDateTime.Hour;
+        if (hour >= 5 && hour < 12)
+        {
+            return $"Good morning, Ram";
+        }
+        else if (hour >= 12 && hour < 17)
+        {
+            return $"Good afternoon, Ram";
+        }
+        else if (hour >= 17 && hour < 21)
+        {
+            return $"Good evening, Ram";
+        }
+        else
+        {
+            return $"Good night, Ram";
+        }
+    }
+}

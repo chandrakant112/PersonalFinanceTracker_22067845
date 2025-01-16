@@ -1,0 +1,164 @@
+
+body {
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 0 16px;
+}
+
+.datetime {
+    font-size: 16px;
+    color: #333;
+}
+
+.user-icon {
+    width: 32px;
+    height: 32px;
+    background: #e2e8f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome {
+    font-size: 20px;
+    color: #333;
+    margin: 20px 16px;
+}
+
+.trends-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    padding: 0 16px;
+}
+
+.trend-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.trend-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    height: 200px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    height: 150px;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.bar {
+    flex: 1;
+    background: #e2e8f0;
+    min-width: 20px;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+}
+
+    .bar.active {
+        background: #4f46e5;
+    }
+
+.line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: #4f46e5;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #4f46e5;
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+.chart-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #666;
+    font-size: 12px;
+}
+
+.trend-stats {
+    margin-top: 20px;
+}
+
+.trend-percentage {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.trend-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.export-btn {
+    background: #f3f4f6;
+    color: #4f46e5;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .export-btn:hover {
+        background: #e5e7eb;
+    }
+
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    background: rgb(253, 253, 253);
+}
+
+.footer-title {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.app-name {
+    font-size: 20px;
+    font-weight: 500;
+    color: #333;
+}
