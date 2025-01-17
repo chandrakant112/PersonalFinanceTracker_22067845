@@ -8,7 +8,8 @@ namespace PersonalFinanceTracker.Services
 {
     public class AddTransactionServices : IAddTransactionServices
     {
-        private readonly string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "C:\\Users\\ramsa\\Desktop\\Third Year\\DotNet\\Coursework\\PersonalFinanceTracker\\Resources\\Images\\transactions.json"); // Path where data will be saved
+        private readonly string filePath = Path.Combine(AppContext.BaseDirectory, "Resources", "Images", "transactions.json");
+        //private readonly string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "C:\\Users\\ramsa\\Desktop\\Third Year\\DotNet\\Coursework\\PersonalFinanceTracker\\Resources\\Images\\transactions.json"); // Path where data will be saved
 
         public async Task SaveTransactionAsync(TransactionModel transaction)
         {
@@ -18,6 +19,7 @@ namespace PersonalFinanceTracker.Services
                 var directory = Path.GetDirectoryName(filePath);
                 if (!Directory.Exists(directory))
                 {
+
                     Directory.CreateDirectory(directory);
                 }
 

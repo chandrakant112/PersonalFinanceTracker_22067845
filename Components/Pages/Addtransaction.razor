@@ -2,6 +2,9 @@
 @using PersonalFinanceTracker.Services
 @using PersonalFinanceTracker.Models
 @inject IAddTransactionServices AddTransactionServices
+@using MudBlazor
+
+
 
 <div class="container">
     <div class="datetime">@currentDateTime.ToString("f")</div>
@@ -41,7 +44,7 @@
             <div class="error-message">@insufficientBalanceMessage</div>
         }
 
-        <input type="text" class="input-field" placeholder="Note" @bind="currentTransaction.Notes" />
+        <input type="text" class="input-field" placeholder="Note(Optional)" @bind="currentTransaction.Notes" />
 
         <div class="tag-container">
             <div class="tag-input-container">
@@ -72,11 +75,13 @@
         </div>
 
         <div class="button-container">
+           
             <button class="btn" @onclick='() => SaveTransaction("debit")'>Add Debit</button>
             <button class="btn" @onclick='() => SaveTransaction("credit")'>Add Credit</button>
         </div>
-    </div>
 
+    </div>
+    <MudButton Variant="Variant.Outlined">Default</MudButton>
     <div class="footer">
         <div class="footer-text">Make your financial tracker smart</div>
         <div class="app-name">TrackExp</div>

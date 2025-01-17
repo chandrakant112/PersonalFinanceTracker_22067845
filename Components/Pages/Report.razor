@@ -1,70 +1,74 @@
 ﻿@page "/Report"
-@* Report page  *@
-<body>
-    <div class="container">
-        <header class="header">
-            <div class="datetime">Date time: 2024/12/14 1:45PM</div>
-            <div class="user-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-            </div>
-        </header>
+@using MudBlazor
+@using System.Globalization
+@inject IAddTransactionServices AddTransactionServices
+@inject ISnackbar Snackbar
+@using System.Diagnostics
+@using System.Collections.Generic
+@using System.Linq
 
-        <div class="welcome">Welcome ram</div>
+<div>
+    <h4 style="text-align: center; color: #2c3e50; padding: 20px 0; margin-bottom: 30px; font-weight: 600; text-transform: uppercase; border-bottom: 2px solid #3498db; font-family: 'Segoe UI', Arial, sans-serif; letter-spacing: 1px;">Visualize Your Financial Journey: Comprehensive Transaction Insights</h4>
+    <br /> <br />
+    <MudChart ChartType="ChartType.Line" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px" ChartOptions="@Options" />
 
-        <div class="trends-container">
-            <div class="trend-card">
-                <h3 class="trend-title">Inflow Trends</h3>
-                <div class="chart-container">
-                    <div class="chart-bars">
-                        <div class="bar" style="height: 60%"></div>
-                        <div class="bar" style="height: 80%"></div>
-                        <div class="bar" style="height: 40%"></div>
-                        <div class="bar" style="height: 70%"></div>
-                        <div class="bar active" style="height: 90%"></div>
-                        <div class="bar" style="height: 50%"></div>
-                        <div class="bar" style="height: 65%"></div>
-                    </div>
-                    <div class="chart-info">
-                        <span>Monday, April 22nd</span>
-                        <span>50</span>
-                    </div>
-                </div>
-                <div class="trend-stats">
-                    <button class="export-btn">Export data</button>
-                </div>
-            </div>
-            @* Trend card *@
-            <div class="trend-card">
-                <h3 class="trend-title">Outflow trends</h3>
-                <div class="chart-container">
-                    <div class="chart-bars">
-                        <div class="bar" style="height: 40%"></div>
-                        <div class="bar" style="height: 90%"></div>
-                        <div class="bar" style="height: 50%"></div>
-                        <div class="bar active" style="height: 70%"></div>
-                        <div class="bar" style="height: 80%"></div>
-                        <div class="bar" style="height: 30%"></div>
-                    </div>
-                    <div class="chart-info">
-                        <span>20 views</span>
-                        <span>Monday, April 22nd</span>
-                    </div>
-                </div>
-                <div class="trend-stats">
-                    <button class="export-btn">Export data</button>
-                </div>
-            </div>
-        </div>
+</div>
 
-        <footer class="footer">
-            <div class="footer-title">Make your financial tracker smart</div>
-            <div class="app-name">TrackExp</div>
-        </footer>
-    </div>
-</body>
 @code {
+    private int Index = -1; // Default value cannot be 0 -> first selected index is 0.
+    public ChartOptions Options = new ChartOptions();
 
+    public List<ChartSeries> Series = new List<ChartSeries>();
+    public string[] XAxisLabels = Array.Empty<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var allTransactions = await AddTransactionServices.GetAllTransactionsAsync();
+            if (allTransactions != null && allTransactions.Any())
+            {
+                // Group transactions by month and calculate totals for Debit, Credit, and Debt
+                var groupedData = allTransactions
+                    .GroupBy(t => t.Date.ToString("MMM", CultureInfo.InvariantCulture)) // Group by month name
+                    .OrderBy(g => DateTime.ParseExact(g.Key, "MMM", CultureInfo.InvariantCulture)) // Ensure proper month order
+                    .ToDictionary(
+                        g => g.Key,
+                        g => new
+                        {
+                            Debit = g.Where(t => t.Type?.ToLower() == "debit").Sum(t => (double)t.Amount),
+                            Credit = g.Where(t => t.Type?.ToLower() == "credit").Sum(t => (double)t.Amount),
+                            Debt = g.Where(t => t.Type?.ToLower() == "debt").Sum(t => (double)t.Amount)
+                        });
+
+                // Populate XAxisLabels
+                XAxisLabels = groupedData.Keys.ToArray();
+
+                // Populate Series data
+                Series = new List<ChartSeries>
+                {
+                    new ChartSeries
+                    {
+                        Name = "Debit",
+                        Data = groupedData.Values.Select(d => d.Debit).ToArray()
+                    },
+                    new ChartSeries
+                    {
+                        Name = "Credit",
+                        Data = groupedData.Values.Select(d => d.Credit).ToArray()
+                    },
+                    new ChartSeries
+                    {
+                        Name = "Debt",
+                        Data = groupedData.Values.Select(d => d.Debt).ToArray()
+                    }
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error fetching transaction data: {ex.Message}");
+            Snackbar.Add("Failed to load transaction data.", Severity.Error);
+        }
+    }
 }
